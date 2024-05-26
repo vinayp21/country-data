@@ -23,7 +23,9 @@ function DropdownComponent(props: DropdownProps) {
 
       <Dropdown.Menu>
         {props.menu.map((item) => (
-          <Dropdown.Item eventKey={item.id}>{item.name}</Dropdown.Item>
+          <Dropdown.Item key={item.id} eventKey={item.id}>
+            {item.name}
+          </Dropdown.Item>
         ))}
       </Dropdown.Menu>
     </Dropdown>

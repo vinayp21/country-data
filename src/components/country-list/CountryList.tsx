@@ -203,7 +203,7 @@ export const CountryList = () => {
         {!isLoading && (
           <div className="country-list" ref={countryRef}>
             {countryListData.map((countryData) => (
-              <div className="country-widget">
+              <div className="country-widget" key={countryData.code}>
                 <CountryWidget data={countryData} getDetails={openModal} />
               </div>
             ))}

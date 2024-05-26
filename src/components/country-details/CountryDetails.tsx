@@ -50,7 +50,9 @@ const CountryDetails = (props: CountryDetailsProps) => {
             <div className="label">Currencies:</div>
             <div className="pill-list">
               {currencies.map((currency) => (
-                <span className="pill value">{currency}</span>
+                <span key={currency} className="pill value">
+                  {currency}
+                </span>
               ))}
             </div>
           </div>
@@ -60,7 +62,9 @@ const CountryDetails = (props: CountryDetailsProps) => {
             <div className="label"> Languages:</div>
             <div className="pill-list">
               {languages.map((language) => (
-                <span className="pill value">{language}</span>
+                <span key={language} className="pill value">
+                  {language}
+                </span>
               ))}
             </div>
           </div>
@@ -70,7 +74,9 @@ const CountryDetails = (props: CountryDetailsProps) => {
             <div className="label">Borders:</div>
             <div className="pill-list">
               {borders.map((border) => (
-                <span className="pill value">{border}</span>
+                <span key={border} className="pill value">
+                  {border}
+                </span>
               ))}
             </div>
           </div>
