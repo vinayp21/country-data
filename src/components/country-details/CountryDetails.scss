@@ -30,3 +30,9 @@
     margin-bottom: 10px;
   }
 }
+@media screen and (max-width: 480px) {
+  .country-details {
+    display: flex;
+    flex-direction: column;
+  }
+}

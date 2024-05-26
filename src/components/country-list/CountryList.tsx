@@ -1,4 +1,12 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  lazy,
+  Suspense,
+} from 'react';
+
 import {
   ALL_COUNTRY_URL,
   defaultMenu,
@@ -9,7 +17,7 @@ import { ICountry } from '../../country.interface';
 import './CountryList.scss';
 import { CountryWidget } from '../country-widget/CountryWidget';
 import { ModalComponent } from '../Modal/Modal';
-import { CountryDetails } from '../country-details/CountryDetails';
+// import { CountryDetails } from '../country-details/CountryDetails';
 import Loader from '../../loader.gif';
 import {
   DB_NAME,
@@ -18,6 +26,7 @@ import {
   initializeIndexedDb,
 } from '../../db';
 import DropdownComponent from '../dropdown/Dropdown';
+const CountryDetails = lazy(() => import('../country-details/CountryDetails'));
 
 export const CountryList = () => {
   const [apiData, setApiData] = useState<ICountry[]>([]);
@@ -167,9 +176,11 @@ export const CountryList = () => {
   return (
     <div className="country-list-container">
       <ModalComponent handleModal={handleModal} showModal={showModal}>
-        {selectedCountryData && (
-          <CountryDetails countryData={selectedCountryData} />
-        )}
+        <Suspense fallback={<img src={Loader} alt="Loading" />}>
+          {selectedCountryData && (
+            <CountryDetails countryData={selectedCountryData} />
+          )}
+        </Suspense>
       </ModalComponent>
       <section className="country-section">
         <header>

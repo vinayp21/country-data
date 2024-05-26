@@ -7,7 +7,7 @@ type CountryDetailsProps = {
   countryData: ICountry;
 };
 
-export const CountryDetails = (props: CountryDetailsProps) => {
+const CountryDetails = (props: CountryDetailsProps) => {
   const [borders, setBorders] = useState<string[]>([]);
   const {
     name,
@@ -101,3 +101,5 @@ export const CountryDetails = (props: CountryDetailsProps) => {
     </div>
   );
 };
+
+export default CountryDetails;

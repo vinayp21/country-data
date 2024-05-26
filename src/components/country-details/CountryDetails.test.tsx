@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { CountryDetails } from './CountryDetails';
+import CountryDetails from './CountryDetails';
 
 var data = {
   name: 'India',
@@ -20,7 +20,7 @@ var data = {
 };
 test('renders CountryDetails with all required fields', () => {
   render(<CountryDetails countryData={data} />);
-  const linkElement = screen.getByText(/India/i);
+  const linkElement = screen.getByText(/Asia/i);
   expect(linkElement).toBeInTheDocument();
   const linkElement1 = screen.getByText(/Delhi/i);
   expect(linkElement1).toBeInTheDocument();
