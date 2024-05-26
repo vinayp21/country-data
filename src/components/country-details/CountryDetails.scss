@@ -1,0 +1,32 @@
+.country-details {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  .top-section {
+  }
+  .label {
+    font-weight: bold;
+    margin-right: 5px;
+    font-size: 16px;
+    margin: 15px 0;
+  }
+  .value {
+    margin-right: 5px;
+    font-size: 16px;
+  }
+  .pill {
+    background-color: #cccccc;
+    border-radius: 20px;
+    padding: 10px;
+    font-size: 12px;
+  }
+  .pill-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 320px;
+  }
+  .details > div {
+    margin-bottom: 10px;
+  }
+}
