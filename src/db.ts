@@ -52,7 +52,7 @@ export const addDataToStore = (storeName: string, data: ICountry[]) => {
   });
 };
 
-export const getAllStoreData = (storeName: string) => {
+export const getAllStoreData = (storeName: string): Promise<ICountry[]> => {
   return new Promise((resolve) => {
     let request = indexedDB.open(DB_NAME);
 

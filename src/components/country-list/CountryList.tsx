@@ -40,22 +40,33 @@ export const CountryList = () => {
     nextPageSize: 20,
   });
   const countryRef = useRef<any>(null);
+  const abortControllerRef = useRef<any>(null);
   const fetchData = useCallback(
-    async (url: string) => {
+    async (url: string, serveFromCache = false) => {
       try {
         setIsLoading(true);
         let isOnline = navigator.onLine;
-        let data;
-        if (isOnline) {
-          const result = await fetch(url);
-          data = await result.json();
-        } else {
+        let data: ICountry[] = [];
+        let isServedFromAPI = false;
+        if (serveFromCache || !isOnline) {
           data = await getAllStoreData(DB_NAME);
+        }
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        const newAbortController = new AbortController();
+        abortControllerRef.current = newAbortController;
+        if (isOnline && !data.length) {
+          isServedFromAPI = true;
+          const result = await fetch(url, {
+            signal: newAbortController.signal,
+          });
+          data = await result.json();
         }
         if (!data) return;
         const countryList: ICountry[] = await getProcessedCountryData(
           data,
-          isOnline,
+          isServedFromAPI,
         );
         setApiData(countryList);
         setCountryListData(
@@ -67,9 +78,11 @@ export const CountryList = () => {
             addDataToStore(DB_NAME, countryList);
           });
         }
-      } catch (err) {
-        setIsLoading(false);
-        setCountryListData([]);
+      } catch (err: any) {
+        if (err?.message?.trim() !== 'The operation was aborted.') {
+          setIsLoading(false);
+          setCountryListData([]);
+        }
       }
     },
     [paginationDetails.initialPageSize],
@@ -123,7 +136,7 @@ export const CountryList = () => {
   const intiateSearch = useCallback(
     async (searchValue: string) => {
       if (!searchValue) {
-        await fetchData(ALL_COUNTRY_URL);
+        await fetchData(ALL_COUNTRY_URL, true);
       } else {
         const [selectedMenu] = menu.filter((item) => item.isSelected);
         const url = getAPIUrl(selectedMenu.id);
