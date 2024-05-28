@@ -20,7 +20,6 @@ const CountryDetails = (props: CountryDetailsProps) => {
     borderCountries,
     languages,
   } = props.countryData;
-
   const fetchBorders = useCallback(async (borderCountries: string[]) => {
     const borderArr = borderCountries.map(async (country) => {
       const border = (await getStoreRecord(DB_NAME, country)) || country;
@@ -39,7 +38,7 @@ const CountryDetails = (props: CountryDetailsProps) => {
     }
   }, [borderCountries, fetchBorders]);
 
-  if (!props.countryData) return null;
+  if (!props.countryData) return <div>Country data not found</div>;
 
   return (
     <div className="country-details">

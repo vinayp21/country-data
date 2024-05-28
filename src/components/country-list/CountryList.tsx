@@ -25,6 +25,7 @@ import {
   initializeIndexedDb,
 } from '../../db';
 import DropdownComponent from '../dropdown/Dropdown';
+import { CountryInput } from '../country-input/CountryInput';
 const CountryDetails = lazy(() => import('../country-details/CountryDetails'));
 
 export const CountryList = () => {
@@ -200,7 +201,6 @@ export const CountryList = () => {
     });
     setMenu(updatedMenu);
   };
-  const [selectedMenu] = menu.filter((item) => !!item.isSelected);
   return (
     <div className="country-list-container">
       <ModalComponent handleModal={handleModal} showModal={showModal}>
@@ -211,22 +211,12 @@ export const CountryList = () => {
         </Suspense>
       </ModalComponent>
       <section className="country-section">
-        <header>
-          <div className="search">
-            <DropdownComponent
-              menu={menu}
-              setFiltercriteria={setFiltercriteria}
-            />
-            <input
-              className="text-input"
-              type="text"
-              placeholder={`Search ${selectedMenu.name}`}
-              onChange={handleSearch}
-              value={searchValue}
-              data-testid="search-input"
-            />
-          </div>
-        </header>
+        <CountryInput
+          menu={menu}
+          setFiltercriteria={setFiltercriteria}
+          handleSearch={handleSearch}
+          searchValue={searchValue}
+        />
         {apiData.isError && (
           <h2>
             Failed to fetch country list, get Offline data -
