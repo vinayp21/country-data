@@ -74,7 +74,7 @@ export const defaultMenu = [
   },
   {
     id: 'currency',
-    name: 'currency',
+    name: 'Currency',
     isSelected: false,
   },
 ];

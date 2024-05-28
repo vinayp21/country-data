@@ -17,7 +17,6 @@ import { ICountry } from '../../country.interface';
 import './CountryList.scss';
 import { CountryWidget } from '../country-widget/CountryWidget';
 import { ModalComponent } from '../Modal/Modal';
-// import { CountryDetails } from '../country-details/CountryDetails';
 import Loader from '../../loader.gif';
 import {
   DB_NAME,
@@ -29,10 +28,17 @@ import DropdownComponent from '../dropdown/Dropdown';
 const CountryDetails = lazy(() => import('../country-details/CountryDetails'));
 
 export const CountryList = () => {
-  const [apiData, setApiData] = useState<ICountry[]>([]);
+  const [apiData, setApiData] = useState<{
+    data: ICountry[];
+    isLoading: boolean;
+    isError: boolean;
+  }>({
+    data: [],
+    isLoading: false,
+    isError: false,
+  });
   const [countryListData, setCountryListData] = useState<ICountry[]>([]);
   const [searchValue, setSearchValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [menu, setMenu] = useState(defaultMenu);
   const [paginationDetails, setPaginationDetails] = useState({
     initialPageSize: 40,
@@ -44,7 +50,7 @@ export const CountryList = () => {
   const fetchData = useCallback(
     async (url: string, serveFromCache = false) => {
       try {
-        setIsLoading(true);
+        setApiData({ ...apiData, isLoading: true, isError: false });
         let isOnline = navigator.onLine;
         let data: ICountry[] = [];
         let isServedFromAPI = false;
@@ -68,11 +74,15 @@ export const CountryList = () => {
           data,
           isServedFromAPI,
         );
-        setApiData(countryList);
+        setApiData({
+          ...apiData,
+          data: countryList,
+          isLoading: false,
+          isError: false,
+        });
         setCountryListData(
           countryList.slice(0, paginationDetails.initialPageSize),
         );
-        setIsLoading(false);
         if (isOnline) {
           initializeIndexedDb().then(() => {
             addDataToStore(DB_NAME, countryList);
@@ -80,7 +90,11 @@ export const CountryList = () => {
         }
       } catch (err: any) {
         if (err?.message?.trim() !== 'The operation was aborted.') {
-          setIsLoading(false);
+          setApiData({
+            ...apiData,
+            isLoading: false,
+            isError: true,
+          });
           setCountryListData([]);
         }
       }
@@ -110,7 +124,7 @@ export const CountryList = () => {
       const { currentPage, initialPageSize, nextPageSize } = paginationDetails;
       const from = initialPageSize + (currentPage - 1) * nextPageSize;
       const to = from + nextPageSize;
-      const slicedData = apiData.slice(from, to);
+      const slicedData = apiData.data.slice(from, to);
       setCountryListData([...countryListData, ...slicedData]);
       setPaginationDetails({
         ...paginationDetails,
@@ -186,6 +200,7 @@ export const CountryList = () => {
     });
     setMenu(updatedMenu);
   };
+  const [selectedMenu] = menu.filter((item) => !!item.isSelected);
   return (
     <div className="country-list-container">
       <ModalComponent handleModal={handleModal} showModal={showModal}>
@@ -205,22 +220,32 @@ export const CountryList = () => {
             <input
               className="text-input"
               type="text"
-              placeholder="Search"
+              placeholder={`Search ${selectedMenu.name}`}
               onChange={handleSearch}
               value={searchValue}
               data-testid="search-input"
             />
           </div>
         </header>
-        {isLoading && <img src={Loader} alt="Loading" />}
-        {!isLoading && (
+        {apiData.isError && (
+          <h2>
+            Failed to fetch country list, get Offline data -
+            <button onClick={() => fetchData(ALL_COUNTRY_URL, true)}>
+              Here
+            </button>
+          </h2>
+        )}
+        {apiData.isLoading && <img src={Loader} alt="Loading" />}
+        {!apiData.isLoading && (
           <div className="country-list" ref={countryRef}>
             {countryListData.map((countryData) => (
               <div className="country-widget" key={countryData.code}>
                 <CountryWidget data={countryData} getDetails={openModal} />
               </div>
             ))}
-            {!countryListData.length && <h2>No data found</h2>}
+            {!countryListData.length && !apiData.isError && (
+              <h2>No data found</h2>
+            )}
           </div>
         )}
       </section>
