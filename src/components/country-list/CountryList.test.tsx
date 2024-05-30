@@ -1,5 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { CountryList } from './CountryList';
+import { act } from 'react';
+import { apiData } from '../../mock';
 
 const data = [
   {
@@ -20,15 +22,22 @@ const data = [
     nativeName: 'india',
   },
 ];
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: jest.fn(() => Promise.reject(apiData)),
+  }),
+) as jest.Mock;
 
 jest.mock('../../db', () => ({
   getAllStoreData: jest.fn().mockReturnValue(data),
 }));
 
-test('renders CountryList header and loader component with dropdown and input', () => {
-  render(<CountryList />);
+test('renders CountryList with input and dropdown component and logs error screen', async () => {
+  await act(async () => render(<CountryList />));
   const linkElement = screen.getByText(/Country Name/i);
   expect(linkElement).toBeInTheDocument();
-  const imgText = screen.getByAltText('Loading');
+  const input: any = screen.getByLabelText('search-input');
+  expect(input.value).toBe('');
+  const imgText = screen.getByTestId('error-fallback');
   expect(imgText).toBeInTheDocument();
 });

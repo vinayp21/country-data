@@ -24,7 +24,6 @@ import {
   getAllStoreData,
   initializeIndexedDb,
 } from '../../db';
-import DropdownComponent from '../dropdown/Dropdown';
 import { CountryInput } from '../country-input/CountryInput';
 const CountryDetails = lazy(() => import('../country-details/CountryDetails'));
 
@@ -51,7 +50,11 @@ export const CountryList = () => {
   const fetchData = useCallback(
     async (url: string, serveFromCache = false) => {
       try {
-        setApiData({ ...apiData, isLoading: true, isError: false });
+        setApiData((apiData) => ({
+          ...apiData,
+          isLoading: true,
+          isError: false,
+        }));
         let isOnline = navigator.onLine;
         let data: ICountry[] = [];
         let isServedFromAPI = false;
@@ -70,17 +73,20 @@ export const CountryList = () => {
           });
           data = await result.json();
         }
-        if (!data) return;
+        if (!data) {
+          setCountryListData([]);
+          return;
+        }
         const countryList: ICountry[] = await getProcessedCountryData(
           data,
           isServedFromAPI,
         );
-        setApiData({
+        setApiData((apiData) => ({
           ...apiData,
           data: countryList,
           isLoading: false,
           isError: false,
-        });
+        }));
         setCountryListData(
           countryList.slice(0, paginationDetails.initialPageSize),
         );
@@ -91,11 +97,11 @@ export const CountryList = () => {
         }
       } catch (err: any) {
         if (err?.message?.trim() !== 'The operation was aborted.') {
-          setApiData({
+          setApiData((apiData) => ({
             ...apiData,
             isLoading: false,
             isError: true,
-          });
+          }));
           setCountryListData([]);
         }
       }
@@ -218,7 +224,7 @@ export const CountryList = () => {
           searchValue={searchValue}
         />
         {apiData.isError && (
-          <h2>
+          <h2 data-testid="error-fallback">
             Failed to fetch country list, get Offline data -
             <button onClick={() => fetchData(ALL_COUNTRY_URL, true)}>
               Here

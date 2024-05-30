@@ -25,7 +25,10 @@ export const getProcessedCountryData = async (
 const getCountryName = (countryNameObj: {
   common: string;
   official: string;
-}) => {
+}): {
+  nativeName: string;
+  countryName: string;
+} => {
   if (!countryNameObj) {
     return {
       nativeName: '',
@@ -40,7 +43,7 @@ const getCountryName = (countryNameObj: {
   };
 };
 
-const getLanguages = (languageData: any, isOnline: boolean) => {
+const getLanguages = (languageData: any, isOnline: boolean): string[] => {
   if (!languageData) return [];
   if (!isOnline) return languageData;
   const keys = Object.keys(languageData) || [];
@@ -48,7 +51,7 @@ const getLanguages = (languageData: any, isOnline: boolean) => {
   return languages || [];
 };
 
-const getCurrencies = (currencyData: any, isOnline: boolean) => {
+const getCurrencies = (currencyData: any, isOnline: boolean): string[] => {
   if (!currencyData) return [];
   if (!isOnline) return currencyData;
   const keys = Object.keys(currencyData) || [];
