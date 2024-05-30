@@ -206,6 +206,7 @@ export const CountryList = () => {
       };
     });
     setMenu(updatedMenu);
+    setSearchValue('');
   };
   return (
     <div className="country-list-container">
